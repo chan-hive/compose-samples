@@ -10,7 +10,7 @@ services:
             CHANHIVE_DB_HOST: mysql
             CHANHIVE_DB_PORT: 3306
         volumes:
-            - ./chanhiverc.json:/home/node
+            - ./chanhiverc.json:/home/node/chanhiverc.json
 
     mysql:
         image: mysql:8
