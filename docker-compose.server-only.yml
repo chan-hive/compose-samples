@@ -1,0 +1,32 @@
+version: "3"
+
+services:
+    server:
+        image: chanhive/server:latest
+        restart: always
+        environment:
+            CHANHIVE_REDIS_HOST: redis
+            CHANHIVE_REDIS_PORT: 6379
+            CHANHIVE_DB_HOST: mysql
+            CHANHIVE_DB_PORT: 3306
+        volumes:
+            - ./chanhiverc.json:/home/node
+
+    mysql:
+        image: mysql:8
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: chanhive
+            MYSQL_USER: chanhive
+            MYSQL_PASSWORD: chanhive
+            MYSQL_DATABASE: chanhive
+            TZ: Asia/Seoul
+        volumes:
+            - chanhive-db-data:/var/lib/mysql
+
+    redis:
+        image: redis:alpine
+        restart: always
+
+volumes:
+    chanhive-db-data:
