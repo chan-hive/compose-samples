@@ -11,6 +11,8 @@ services:
             CHANHIVE_DB_PORT: 3306
         volumes:
             - ./chanhiverc.json:/home/node/chanhiverc.json
+        ports:
+            - ${PORT?Variable not set}:9000
 
     mysql:
         image: mysql:8
