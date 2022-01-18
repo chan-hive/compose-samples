@@ -6,6 +6,7 @@ services:
         restart: always
         environment:
             API_ENTRYPOINT: http://server:9000/graphql
+            API_WS_ENTRYPOINT: ws://server:9000/graphql
             NEXT_PUBLIC_GRAPHQL_URI: https://${SERVER_URL?Variable not set}/graphql
             NEXT_PUBLIC_WS_GRAPHQL_URI: wss://${SERVER_URL?Variable not set}/graphql
         networks:
