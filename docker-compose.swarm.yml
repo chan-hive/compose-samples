@@ -1,0 +1,88 @@
+version: "3.3"
+
+services:
+    web-app:
+        image: chanhive/web-app:latest
+        restart: always
+        networks:
+            - net
+            - traefik-public
+        deploy:
+            placement:
+                constraints:
+                    - node.role == manager
+            labels:
+                - traefik.enable=true
+                - traefik.docker.network=traefik-public
+                - traefik.constraint-label=traefik-public
+                - traefik.http.routers.chanhive-web-app-http.rule=Host(`${WEB_APP_URL?Variable not set}`)
+                - traefik.http.routers.chanhive-web-app-http.entrypoints=http
+                - traefik.http.routers.chanhive-web-app-http.middlewares=https-redirect
+                - traefik.http.routers.chanhive-web-app-https.rule=Host(`${WEB_APP_URL?Variable not set}`)
+                - traefik.http.routers.chanhive-web-app-https.entrypoints=https
+                - traefik.http.routers.chanhive-web-app-https.tls=true
+                - traefik.http.routers.chanhive-web-app-https.tls.certresolver=le
+                - traefik.http.services.chanhive-web-app.loadbalancer.server.port=9003
+
+    server:
+        image: chanhive/server:latest
+        restart: always
+        environment:
+            CHANHIVE_REDIS_HOST: redis
+            CHANHIVE_REDIS_PORT: 6379
+            CHANHIVE_DB_HOST: mysql
+            CHANHIVE_DB_PORT: 3306
+        volumes:
+            - ./chanhiverc.json:/home/node/chanhiverc.json
+        deploy:
+            placement:
+                constraints:
+                    - node.role == manager
+            labels:
+                - traefik.enable=true
+                - traefik.docker.network=traefik-public
+                - traefik.constraint-label=traefik-public
+                - traefik.http.routers.chanhive-server-http.rule=Host(`${SERVER_URL?Variable not set}`)
+                - traefik.http.routers.chanhive-server-http.entrypoints=http
+                - traefik.http.routers.chanhive-server-http.middlewares=https-redirect
+                - traefik.http.routers.chanhive-server-https.rule=Host(`${SERVER_URL?Variable not set}`)
+                - traefik.http.routers.chanhive-server-https.entrypoints=https
+                - traefik.http.routers.chanhive-server-https.tls=true
+                - traefik.http.routers.chanhive-server-https.tls.certresolver=le
+                - traefik.http.services.chanhive-server.loadbalancer.server.port=9000
+
+    mysql:
+        image: mysql:8
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: chanhive
+            MYSQL_USER: chanhive
+            MYSQL_PASSWORD: chanhive
+            MYSQL_DATABASE: chanhive
+            TZ: Asia/Seoul
+        volumes:
+            - chanhive-db-data:/var/lib/mysql
+        deploy:
+            placement:
+                constraints:
+                    - node.role == manager
+
+    redis:
+        image: redis:alpine
+        restart: always
+        deploy:
+            placement:
+                constraints:
+                    - node.role == manager
+
+volumes:
+    chanhive-db-data:
+        driver: local
+
+networks:
+    net:
+        driver: overlay
+        attachable: true
+    traefik-public:
+        external: true
+
