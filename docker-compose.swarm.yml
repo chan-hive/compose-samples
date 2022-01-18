@@ -27,7 +27,7 @@ services:
                 - traefik.http.routers.chanhive-web-app-https.entrypoints=https
                 - traefik.http.routers.chanhive-web-app-https.tls=true
                 - traefik.http.routers.chanhive-web-app-https.tls.certresolver=le
-                - traefik.http.services.chanhive-web-app.loadbalancer.server.port=9003
+                - traefik.http.services.chanhive-web-app.loadbalancer.server.port=3000
 
     server:
         image: chanhive/server:latest
