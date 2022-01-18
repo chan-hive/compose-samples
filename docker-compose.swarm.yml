@@ -37,6 +37,9 @@ services:
             CHANHIVE_REDIS_PORT: 6379
             CHANHIVE_DB_HOST: mysql
             CHANHIVE_DB_PORT: 3306
+        networks:
+            - net
+            - traefik-public
         volumes:
             - ./chanhiverc.json:/home/node/chanhiverc.json
         deploy:
@@ -65,6 +68,8 @@ services:
             MYSQL_PASSWORD: chanhive
             MYSQL_DATABASE: chanhive
             TZ: Asia/Seoul
+        networks:
+            - net
         volumes:
             - chanhive-db-data:/var/lib/mysql
         deploy:
@@ -75,6 +80,8 @@ services:
     redis:
         image: redis:alpine
         restart: always
+        networks:
+            - net
         deploy:
             placement:
                 constraints:
