@@ -3,7 +3,6 @@ version: "3.3"
 services:
     web-app:
         image: chanhive/web-app:latest
-        restart: always
         environment:
             API_ENTRYPOINT: http://server:9000/graphql
             API_WS_ENTRYPOINT: ws://server:9000/graphql
@@ -31,7 +30,6 @@ services:
 
     server:
         image: chanhive/server:latest
-        restart: always
         environment:
             CHANHIVE_REDIS_HOST: redis
             CHANHIVE_REDIS_PORT: 6379
@@ -61,7 +59,6 @@ services:
 
     mysql:
         image: mysql:8
-        restart: always
         environment:
             MYSQL_ROOT_PASSWORD: chanhive
             MYSQL_USER: chanhive
@@ -79,13 +76,36 @@ services:
 
     redis:
         image: redis:alpine
-        restart: always
         networks:
             - net
         deploy:
             placement:
                 constraints:
                     - node.role == manager
+
+    phpmyadmin:
+        image: phpmyadmin
+        environment:
+            PMA_HOST: mysql
+        networks:
+            - net
+            - traefik-public
+        deploy:
+            placement:
+                constraints:
+                    - node.role == manager
+            labels:
+                - traefik.enable=true
+                - traefik.docker.network=traefik-public
+                - traefik.constraint-label=traefik-public
+                - traefik.http.routers.chanhive-pma-http.rule=Host(`pma-${WEB_APP_URL?Variable not set}`)
+                - traefik.http.routers.chanhive-pma-http.entrypoints=http
+                - traefik.http.routers.chanhive-pma-http.middlewares=https-redirect
+                - traefik.http.routers.chanhive-pma-https.rule=Host(`pma-${WEB_APP_URL?Variable not set}`)
+                - traefik.http.routers.chanhive-pma-https.entrypoints=https
+                - traefik.http.routers.chanhive-pma-https.tls=true
+                - traefik.http.routers.chanhive-pma-https.tls.certresolver=le
+                - traefik.http.services.chanhive-pma.loadbalancer.server.port=80
 
 volumes:
     chanhive-db-data:
