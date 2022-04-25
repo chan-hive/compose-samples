@@ -8,6 +8,7 @@ services:
             API_WS_ENTRYPOINT: ws://server:9000/graphql
             NEXT_PUBLIC_GRAPHQL_URI: https://${SERVER_URL?Variable not set}/graphql
             NEXT_PUBLIC_WS_GRAPHQL_URI: wss://${SERVER_URL?Variable not set}/graphql
+            TZ: Asia/Seoul
         networks:
             - net
             - traefik-public
@@ -35,6 +36,7 @@ services:
             CHANHIVE_REDIS_PORT: 6379
             CHANHIVE_DB_HOST: mysql
             CHANHIVE_DB_PORT: 3306
+            TZ: Asia/Seoul
         networks:
             - net
             - traefik-public
@@ -87,6 +89,7 @@ services:
         image: phpmyadmin
         environment:
             PMA_HOST: mysql
+            TZ: Asia/Seoul
         networks:
             - net
             - traefik-public
