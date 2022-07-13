@@ -50,10 +50,10 @@ services:
                 - traefik.enable=true
                 - traefik.docker.network=traefik-public
                 - traefik.constraint-label=traefik-public
-                - traefik.http.routers.chanhive-server-http.rule=Host(`${SERVER_URL?Variable not set}`)
+                - traefik.http.routers.chanhive-server-http.rule=Host(`${SERVER_URL?Variable not set}`) || (Host(`${WEB_APP_URL?Variable not set}`) && PathPrefix(`/graphql`))
                 - traefik.http.routers.chanhive-server-http.entrypoints=http
                 - traefik.http.routers.chanhive-server-http.middlewares=https-redirect
-                - traefik.http.routers.chanhive-server-https.rule=Host(`${SERVER_URL?Variable not set}`)
+                - traefik.http.routers.chanhive-server-https.rule=Host(`${SERVER_URL?Variable not set}`) || (Host(`${WEB_APP_URL?Variable not set}`) && PathPrefix(`/graphql`))
                 - traefik.http.routers.chanhive-server-https.entrypoints=https
                 - traefik.http.routers.chanhive-server-https.tls=true
                 - traefik.http.routers.chanhive-server-https.tls.certresolver=le
